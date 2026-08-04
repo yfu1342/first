@@ -6,7 +6,7 @@
 title = Hello World
 package.name = helloworldapp
 package.domain = com.yourname
-
+version = 1.0
 # ============================================================
 #  源码配置
 # ============================================================
