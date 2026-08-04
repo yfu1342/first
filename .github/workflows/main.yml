@@ -3,31 +3,28 @@ on:
   push:
     branches: [ main ]
 jobs:
-  build_apk:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-22.04
     steps:
-      - name: 拉取项目代码
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: 配置Python3.12
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.11'
 
-      - name: 安装系统依赖
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses-dev cmake libffi-dev libssl-dev
+      - name: Install setuptools（补distutils兼容）
+        run: pip install setuptools
 
-      - name: 安装打包工具
-        run: |
-          pip install --break-system-packages buildozer==1.4.0 cython==3.0.0 meson ninja "kivy[base]"
+      - name: Build APK with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v2
+        with:
+          buildozer_spec: buildozer.spec
+          command: android debug
 
-      - name: 编译安卓APK
-        run: buildozer android debug
-
-      - name: 上传打包好的APK文件
+      - name: Upload generated APK
         uses: actions/upload-artifact@v4
         with:
+          name: debug-apk
           path: bin/*.apk
-          name: 生成的安卓安装包
